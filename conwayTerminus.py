@@ -1,4 +1,5 @@
 import sys
+import os
 
 class Game(object):
     
@@ -34,6 +35,9 @@ class Game(object):
     def display(self):
         return self.state.display()
 
+   
+
+
 class State(object):
 
     def __init__(self, positions, x, y, width, height):
@@ -61,6 +65,7 @@ class State(object):
                     output += ' .'
             output += '\n'
         return output
+
 
 glider = """ oo.
              o.o
