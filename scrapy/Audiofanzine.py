@@ -1,63 +1,109 @@
-import requests
-from bs4 import BeautifulSoup
-import csv
+from Toolkit import Toolkit
+# from AudiofanzineEntry import AudiofanzineEntry
 
-resultDataUrl = []
-baseUrl = 'https://fr.audiofanzine.com'
-uri = '/annonces'
-exploitUrl = baseUrl + uri
+class Audiofanzine:
+    def __init__(self, baseUrl, uri, nbPage, fields):
+        self.baseUrl = baseUrl
+        self.uri = uri
+        self.setPageMax(nbPage)
+        self.urls = []
+        self.endpoints = []
+        self.result = []
+        self.finalFileNameFields = fields
 
-class AudioFanzine(object):
- 
-    def getEndpoints(swoup):
-        links = []
-        ul = swoup.find('ul')
-        lis = ul.findAll('li')
-        for li in lis:
-            a = li.find('a')  
-            links.append(baseUrl + a['href'])
-        return links
+    def setFinalFileNameFields(self):
 
-    def getInfoByPage(swoup):
-        infosTriees = [swoup]
-        return infosTriees  
+        return self
+
+    def setPageMax(self, pageMax):
+
+        self.nbPage = pageMax + 1
+        return self
     
-    def fileReader(file):
+    def getLinks(self):
+
+        for i in range(self.nbPage):
+            self.urls.append(self.baseUrl + self.uri)
+        return self.urls
+
+    def setEndpoints(self,soup):
+
+        print('init fonction getEndpoints')
+        links = []
+        divP = soup.find('div', {"class":"cmps-tabs"})
+        divFC = divP.findAll('div', {"class":"cmps-tabs-col"})
+        for a in divFC:
+            a = a.find('a')  
+            try:
+                links.append(a['href'])
+            except:
+                pass
+        self.endpoints.extend(Toolkit.addBaseUrl(self.baseUrl, links))
+        return self.endpoints
+        
+    def getResult(self):
+
+        return self.result
+
+    def getDictResult(self):
+
         result = []
-        with open(file, 'r', encoding="UTF8", newline="") as f:
-            reader = csv.DictReader(f)
-            for line in reader:
-                result.append(line) 
+        for res in self.getResult():
+            result.append(res.getDictEntry())
         return result
 
-    def fileWriter(file, data):
-        print(type(data))
-        csv.register_dialect('myDialect',
-                     delimiter='|',
-                     quoting=csv.QUOTE_ALL)
-        with open(file, 'w', encoding="UTF8", newline='') as f:
-            writer = csv.writer(f, dialect='myDialect')
-            writer.writerows(data)
+    def getEndpoints(self):
+
+       return self.endpoints
+    
+    # def getInfoByPage(self, soup):
+    
+    #     fiches = []
+    #     contacts = soup.find("div",{"class": "coordonnees"})
+    #     if contacts is not None:
+    #         tabs = contacts.findAll('li', {"class":"accordeon-item"})
+    #         if tabs is not None:
+    #             for contact in tabs:
+    #                 name = Toolkit.tryToCleanOrReturnBlank(contact.find("div", {"class": "accordeon-header"}))
+    #                 coord = contact.find("div", {"class": "accordeon-body"})
+    #                 adress = coord.find("p")
+    #                 tel = Toolkit.tryToCleanOrReturnBlank(coord.find("a", {"class": "tel"}))
+    #                 email = Toolkit.tryToCleanOrReturnBlank(coord.find("a", {"class": "email"}))
+    #                 title = Toolkit.tryToCleanOrReturnBlank(soup.find("title"))
+    #                 try:
+    #                     adress = adress.getText()
+    #                     cleanArrAdress = []
+    #                     for ele in str(adress).split("\n"):
+    #                         # cleanAdress.push(ele)
+    #                         if ele.strip() != "":
+    #                             cleanArrAdress.append(ele.strip())
+                        
+    #                     realAdress = cleanArrAdress[0]
+    #                     realCC = cleanArrAdress[1]
+    #                     realCountry = cleanArrAdress[2]
+    #                 except:
+    #                     adress= ""
+    #                     realAdress= ""
+    #                     realCC= ""
+    #                     realCountry= ""
+    #                     cleanArrAdress = []
             
-        # return 
-        return True
+    #                 fiche = StudyramaEntry(title, name, cleanArrAdress, realAdress, realCC, realCountry, tel, email)
+    #                 fiches.append(fiche)
+    #     self.result.extend(fiches)
+    #     return fiches
 
-    def main(url, process):
-        response = requests.get(url)
-        if response.ok:
-            soup = BeautifulSoup(response.text, 'html.parser')
-            return process(soup)
-        return []
+    def getFinalFieldNames(self):
 
-    # exec des fonctions
-    endpoints = main(exploitUrl, getEndpoints)
-    resultDataUrl.extend(endpoints)
+        return self.finalFileNameFields
 
-    fileWriter('links.csv', resultDataUrl)
+    def getResult(self):
 
-# exec de la classe
-AudioFanzine()
+        return self.result
 
-# getUrl = AudioFanzine()
-# endpoints = getUrl.main(exploitUrl, getEndpoints)
-# print(endpoints)
+    def getDictResult(self):
+
+        result = []
+        for res in self.getResult():
+            result.append(res.getDictEntry())
+        return result

@@ -1,22 +1,17 @@
-import requests
-from bs4 import BeautifulSoup
+from Scraper import Scraper
+from Audiofanzine import Audiofanzine
 
-baseUrl = 'https://fr.audiofanzine.com/annonces'
-uri = '/annonces/'
-response = requests.get(baseUrl)
+# L'url du site que je souhaite Scraper
+baseUrl = 'https://fr.audiofanzine.com'
+uri = "/petites-annonces/?type=2"
 
-def getEndpoint(swoup):
-    resultData = []
-    ul = swoup.find('ul')
-    lis = ul.findAll('li')
-    for li in lis:
-        a = li.find('a')  
-        resultData.append(baseUrl + a['href'])
-    return resultData
-if response.ok:
-    swoup = BeautifulSoup(response.text, 'html.parser')
-    autolink = getEndpoint(swoup)
- 
-print(len(resultData))
-print(resultData)
-print(response.ok)
+audiofanzineInstanceLink = Audiofanzine(baseUrl, uri, 1, 'Links')
+# audifanzineInstanceData = Audiofanzine(baseUrl, uri, nbPage, ['', ''])
+
+# scraper1 = Scraper(audiofanzineInstanceData, "./data/linksListaudiofanzine.csv", "./data/dataAudiofanzine.csv")
+scraper = Scraper(audiofanzineInstanceLink, "./data/links.csv", "./data/linksListaudiofanzine.csv")
+
+scraper.exec()
+# scraper1.exec()
+
+print("Done")
