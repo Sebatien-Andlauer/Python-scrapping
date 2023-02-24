@@ -24,7 +24,6 @@ class Scraper:
         return self
 
     def swoup(self, url, process):
- 
         response = requests.get(url)
         if response.ok:
             soup = BeautifulSoup(response.text, 'html.parser')
@@ -63,7 +62,7 @@ class Scraper:
             rows.append(row)
         Toolkit.fileWriter(self.linkFile, self.linkFileNameFields, rows )
         print("scraper execution 50%")
-        # self.swoupMultiple(self.ScrapInstance.getEndpoints(), self.ScrapInstance.getInfoByPage )
-        # print("scraper execution 75%")
-        # Toolkit.fileWriter(self.finalFile, self.finalFileNameFields, self.ScrapInstance.getDictResult() )
-        # print("scraper execution 100%")
+        self.swoupMultiple(self.ScrapInstance.getEndpoints(), self.ScrapInstance.getInfoByPage )
+        print("scraper execution 75%")
+        Toolkit.fileWriter(self.finalFile, self.finalFileNameFields, self.ScrapInstance.getDictResult() )
+        print("scraper execution 100%")

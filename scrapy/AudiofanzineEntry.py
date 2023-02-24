@@ -1,27 +1,25 @@
-class AudifanzineEntry:
-    def __init__(self,title,name,adress,realAdress,departement,country,tel,email):
-        
-        self.setTitle(title)
-        self.name = name
-        self.setAdress(adress)
-        self.realAdress = realAdress
-        self.departement = departement
-        self.country = country
-        self.tel = tel
-   
+class AudiofanzineEntry:
+    def __init__(self, title, price, argus, description, location, rate, url):
+        self.title = title
+        self.price = price
+        self.argus = argus
+        self.description = description
+        self.location = location
+        self.rate = rate
+        self.url = url
 
-    def setTitle(self, title):
-        self.title = title.replace('- Studyrama', "")
+
     def setAdress(self, arrAdress):
         self.adress = " ".join(arrAdress)
     def getDictEntry(self):
-        return {
-            "title":self.title,
-            "name":self.name,
-            "adress":self.adress,
-            "realAdress":self.realAdress,
-            "departement":self.departement,
-            "country":self.country,
-            "tel":self.tel,
-            "email":self.email
-        }
+        fiche = {
+                "title":self.title,
+                "price":self.price,
+                "argus":self.argus,
+                "description":self.description,
+                "location" :self.location,
+                "rate" :self.rate,
+                "url" :self.url
+                }
+        print(fiche)
+        return fiche

@@ -6,12 +6,11 @@ baseUrl = 'https://fr.audiofanzine.com'
 uri = "/petites-annonces/?type=2"
 
 audiofanzineInstanceLink = Audiofanzine(baseUrl, uri, 1, 'Links')
-# audifanzineInstanceData = Audiofanzine(baseUrl, uri, nbPage, ['', ''])
+audifanzineInstanceData = Audiofanzine(baseUrl, uri, 1, ["title", "price", "argus", "description", "location", "rate", "url"])
+scraper1 = Scraper(audifanzineInstanceData, "./data/linksListaudiofanzine.csv", "./data/dataAudiofanzine.csv")
+# scraper = Scraper(audiofanzineInstanceLink, "./data/links.csv", "./data/linksListaudiofanzine.csv")
 
-# scraper1 = Scraper(audiofanzineInstanceData, "./data/linksListaudiofanzine.csv", "./data/dataAudiofanzine.csv")
-scraper = Scraper(audiofanzineInstanceLink, "./data/links.csv", "./data/linksListaudiofanzine.csv")
-
-scraper.exec()
-# scraper1.exec()
+# scraper.exec()
+scraper1.exec()
 
 print("Done")

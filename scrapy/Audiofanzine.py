@@ -1,5 +1,6 @@
 from Toolkit import Toolkit
-# from AudiofanzineEntry import AudiofanzineEntry
+from AudiofanzineEntry import AudiofanzineEntry
+
 
 class Audiofanzine:
     def __init__(self, baseUrl, uri, nbPage, fields):
@@ -30,9 +31,13 @@ class Audiofanzine:
 
         print('init fonction getEndpoints')
         links = []
-        divP = soup.find('div', {"class":"cmps-tabs"})
-        divFC = divP.findAll('div', {"class":"cmps-tabs-col"})
-        for a in divFC:
+        divP = soup.find("div", {"id": "full-content"})
+        divSp = divP.find("div", {"class": "page-content"})
+        divFC = divSp.find('div', {"class":"wrapper-playlist"})
+        divCU = divFC.find('div', {"class":"classifieds"})
+        ulParent = divFC.find('ul')
+        liArticles = ulParent.findAll('li')
+        for a in liArticles:
             a = a.find('a')  
             try:
                 links.append(a['href'])
@@ -56,42 +61,46 @@ class Audiofanzine:
 
        return self.endpoints
     
-    # def getInfoByPage(self, soup):
-    
-    #     fiches = []
-    #     contacts = soup.find("div",{"class": "coordonnees"})
-    #     if contacts is not None:
-    #         tabs = contacts.findAll('li', {"class":"accordeon-item"})
-    #         if tabs is not None:
-    #             for contact in tabs:
-    #                 name = Toolkit.tryToCleanOrReturnBlank(contact.find("div", {"class": "accordeon-header"}))
-    #                 coord = contact.find("div", {"class": "accordeon-body"})
-    #                 adress = coord.find("p")
-    #                 tel = Toolkit.tryToCleanOrReturnBlank(coord.find("a", {"class": "tel"}))
-    #                 email = Toolkit.tryToCleanOrReturnBlank(coord.find("a", {"class": "email"}))
-    #                 title = Toolkit.tryToCleanOrReturnBlank(soup.find("title"))
-    #                 try:
-    #                     adress = adress.getText()
-    #                     cleanArrAdress = []
-    #                     for ele in str(adress).split("\n"):
-    #                         # cleanAdress.push(ele)
-    #                         if ele.strip() != "":
-    #                             cleanArrAdress.append(ele.strip())
-                        
-    #                     realAdress = cleanArrAdress[0]
-    #                     realCC = cleanArrAdress[1]
-    #                     realCountry = cleanArrAdress[2]
-    #                 except:
-    #                     adress= ""
-    #                     realAdress= ""
-    #                     realCC= ""
-    #                     realCountry= ""
-    #                     cleanArrAdress = []
-            
-    #                 fiche = StudyramaEntry(title, name, cleanArrAdress, realAdress, realCC, realCountry, tel, email)
-    #                 fiches.append(fiche)
-    #     self.result.extend(fiches)
-    #     return fiches
+    def getInfoByPage(self, soup):
+        # id,title,price,argus,description,location,rate, url
+        print('init getInfoByPage')
+
+        div = soup.find("div", {"id":"full-content"})
+        
+        fiches = []
+        if div is not None:
+            pageContent = div.find('div', {"class":"page-content"})
+            urlMeta = soup.find('meta',{"property":"og:url"})
+            data = pageContent.findAll('div')
+            divAside = div.find("div", {"class":"cmps-infos"})
+            asideArg = divAside.find("aside")
+            divInAside = asideArg.find("div", {"class":"priceBlock-content"})
+            ulAside = divInAside.find('ul')
+            liInAside = ulAside.find('li')
+            aArgus = liInAside.find('a', {"class":"priceBlock-argus"})
+            rating = div.find('div', {"class":"rate-star"})
+            if data is not None:
+                for info in data:
+                    title = Toolkit.tryToCleanOrReturnBlank(info.find('h1'))
+                    price = Toolkit.tryToCleanOrReturnBlank(info.find('div', {"class":"classifieds-price"}))
+                    argus = Toolkit.tryToCleanOrReturnBlank(aArgus)
+                    description = Toolkit.tryToCleanOrReturnBlank(info.find('div', {"class":"classifieds-content-description"}))
+                    location = Toolkit.tryToCleanOrReturnBlank(info.find('div', {"class":"classifieds-localization"}))
+                    rate = Toolkit.tryToCleanOrReturnBlank(rating)
+                    url = Toolkit.tryToCleanOrReturnBlank(urlMeta)
+                    # fiche = {
+                    #     "title":title,
+                    #     "price":price,
+                    #     "argus":argus,
+                    #     "description":description,
+                    #     "location" :location,
+                    #     "rate" :rate,
+                    #     "url" :url
+                    #     }
+                    fiche = AudiofanzineEntry(title, price, argus, description, location, rate, url)
+                    fiches.append(fiche)
+        self.result.extend(fiches)
+        return fiches
 
     def getFinalFieldNames(self):
 
